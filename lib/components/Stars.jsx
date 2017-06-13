@@ -1,158 +1,93 @@
 import React from 'react';
+import bem from 'bem-classname';
+import {times} from 'lodash';
 
-const parentStyles = {
-  overflow: 'hidden',
-  position: 'relative'
-};
-
-const defaultStyles = {
-  position: 'relative',
-  overflow: 'hidden',
-  cursor: 'pointer',
-  display: 'block',
-  float: 'left'
-};
+import './stars.scss';
 
 export default class Stars extends React.Component {
     static defaultProps = {
-        half: true,
-        edit: true,
         count: 5,
-        size: 15,
+        progressive: false,
+        edit: true,
         char: '★',
-        color1: 'gray',
-        color2: '#ffd700'
+        value: 0
     };
 
     constructor(props) {
         super(props);
 
-        this.state = {
-          uniqueness: (Math.random() + '').replace('.', ''),
-          value: props.value || 0,
-          stars: []
-        };
-
-        this.state.config = {
-          count: props.count,
-          size: props.size,
-          char: props.char,
-          // default color of inactive star
-          color1: props.color1,
-          // color of an active star
-          color2: props.color2,
-          edit: props.edit
-        };
-    }
-
-    componentDidMount() {
-        this.setState({
-          stars: this.getStars(this.state.value)
-      });
+        this.state = { value: props.value };
     }
 
     mouseOver(event) {
-        event.preventDefault();
+      const spread = event.target.getBoundingClientRect().right - event.target.getBoundingClientRect().left;
+      const mouseAt = event.clientX - event.target.getBoundingClientRect().left;
 
-        const spread = event.target.getBoundingClientRect().right - event.target.getBoundingClientRect().left;
-        const mouseAt = event.clientX - event.target.getBoundingClientRect().left;
-        //console.log(mouseAt);
-        //console.log(mouseAt);
-        if (mouseAt > 0) {
-            let index = Number(event.target.getAttribute('data-index'));
+      if (mouseAt > 0) {
+          let index = Number(event.target.getAttribute('data-index'));
+          this.setState({ value: index + (mouseAt / spread) });
 
-            const newValue = index + (mouseAt / spread);
-            this.setValue(newValue, index);
-        }
+          if (this.props.onChange) {
+            this.props.onChange(index + (mouseAt / spread));
+          }
+      }
     }
 
-    mouseLeave(event) {
-        event.preventDefault();
-
-        let index = Number(event.target.getAttribute('data-index'));
-        if (index === 0) {
-            this.setValue(0, index);
-        } else if (index === (this.state.config.count - 1)) {
-            this.setValue(this.state.config.count, index);
-        }
-    }
-
-    clicked(event) {
+    click(event) {
         event.preventDefault();
 
         const { config } = this.state;
-        if(!config.edit) {
-            return;
-        }
+
+        const spread = event.target.getBoundingClientRect().right - event.target.getBoundingClientRect().left;
+        const mouseAt = event.clientX - event.target.getBoundingClientRect().left;
 
         let index = Number(event.target.getAttribute('data-index'));
-        let value = index = index + 1;
-
-        this.setState({
-          value: value,
-          stars: this.getStars(index)
-        });
+        this.setState({ value: index + (mouseAt / spread)});
 
         if (this.props.onChange) {
-          this.props.onChange(value);
+          this.props.onChange(index + (mouseAt / spread));
         }
-    }
-
-    setValue(value, index) {
-        this.state.stars.map((star, i) => {
-            star.active = i < index || (i === index && value === (index + 1));
-        });
-
-        this.setState({ value: value });
     }
 
     getRate() {
-        let stars;
+        let rate;
 
-        if(this.state.config.half) {
-          stars = Math.floor(this.state.value);
+        if(this.props.half) {
+          rate = Math.floor(this.state.value);
         } else {
-          stars = Math.round(this.state.value);
+          rate = Math.round(this.state.value);
         }
 
         return stars;
     }
 
-    getStars(activeCount) {
-        if(typeof activeCount === 'undefined') {
-          activeCount = this.getRate();
-        }
-
-        let stars = [];
-        for(let i = 0; i < this.state.config.count; i++) {
-          stars.push({
-            active: i <= activeCount - 1
-          });
-        }
-
-        return stars;
-    }
-
-    getStyleElement(color, uniqueness) {
-        const width = ((this.state.value % 1) * 100) + '%';
+    getStyleElement(width) {
         return `
-          .react-stars-${uniqueness}:before {
+          .stars__star--partial:before {
+            display: inline-flex;
             position: absolute;
             overflow: hidden;
-            display: block;
-            z-index: 1;
+            z-index: 10;
             top: 0; left: 0;
             width: ${width};
             content: attr(data-forhalf);
-            color: ${color};
-        }`;
+            color: #ffd700;
+        }
+        .stars__star--partial:after {
+          display: inline-flex;
+          overflow: hidden;
+          top: 0; left: 0;
+          width: 100%;
+          content: attr(data-forhalf);
+          color: #ccc;
+      }`;
     }
 
-    renderStyleElement() {
+    renderStyleElement(width) {
         const { config, uniqueness } = this.state;
         return (
           <style dangerouslySetInnerHTML={{
-            __html: this.getStyleElement(config.color2, uniqueness)
+            __html: this.getStyleElement(width)
           }}>
           </style>
         );
@@ -160,39 +95,29 @@ export default class Stars extends React.Component {
 
     renderStars() {
         const { uniqueness, stars, value } = this.state;
-        const { color1, color2, size, char } = this.state.config;
-        return stars.map((star, i) => {
-
-          let starClass = '';
-          if (value > 0 && Math.floor(value) === i) {
-              starClass = `react-stars-${uniqueness}`;
-          }
-
-          const style = Object.assign({}, defaultStyles, {
-            color: star.active ? color2 : color1,
-            fontSize: `${size}px`
-          });
+        return times(this.props.count, i => {
+          const isActive = (this.state.value - (i + 1)) > 0 || this.state.value === this.props.count;
+          const isPartial = (this.state.value - i) > 0 && (this.state.value - i) < 1;
+          const className = bem('stars__star', { 'active': isActive, 'partial': isPartial });
 
           return (
-             <span key={i}
-               className={starClass}
-               style={style}
-               data-index={i}
-               data-forhalf={char}
-               onMouseOver={this.mouseOver.bind(this)}
-               onMouseLeave={this.mouseLeave.bind(this)}
-               onClick={this.clicked.bind(this)}>
-               {char}
-             </span>
+             <div key={i}
+                onMouseOver={this.props.edit && this.mouseOver.bind(this)}
+                onMouseMove={this.props.edit && this.mouseOver.bind(this)}
+                onClick={this.props.edit && this.click.bind(this)}
+                className={className}
+                data-index={i}
+                data-forhalf={this.props.char}>
+                {isPartial ? this.renderStyleElement(((this.state.value - i) * 100) + '%') : undefined}
+             </div>
          );
       });
     }
 
     render() {
-        const { className } = this.props;
+        const className = bem('stars', { 'edit': this.props.edit });
         return (
-          <div className={className} style={parentStyles}>
-            {this.renderStyleElement()}
+          <div className={className} style={this.props.style}>
             {this.renderStars()}
           </div>
         );

@@ -1,6 +1,43 @@
-node_modules
-bower_components
-.DS_Store
+# Logs
+logs
 *.log
 
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Coverage tools
+lib-cov
+coverage
+coverage.html
+.cover*
+
+# Npm dependency directory
+node_modules
+
+# Bower dependency directory
+node_modules
+
+# Example build directory
+example/dist
+.publish
+
+# Editor and other tmp files
+*.swp
+*.un~
+*.iml
+*.ipr
+*.iws
+*.sublime-*
+.idea/
+*.DS_Store
+
+# Ignore generation npm package
+*.tgz
+
+# Ignore output directory
 public
+
+# Ignore output directory
+dist

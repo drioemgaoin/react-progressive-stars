@@ -1,0 +1,7 @@
+# Ignore all
+*
+
+# Except
+!dist/**/*
+!lib/**/*
+!static/**/*
