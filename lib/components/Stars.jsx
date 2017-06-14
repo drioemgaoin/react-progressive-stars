@@ -45,8 +45,6 @@ export default class Stars extends React.Component {
     click(event) {
         event.preventDefault();
 
-        const { config } = this.state;
-
         const spread = event.target.getBoundingClientRect().right - event.target.getBoundingClientRect().left;
         const mouseAt = event.clientX - event.target.getBoundingClientRect().left;
 
@@ -62,18 +60,6 @@ export default class Stars extends React.Component {
         if (this.props.onChange) {
           this.props.onChange(roundValue);
         }
-    }
-
-    getRate() {
-        let rate;
-
-        if(this.props.half) {
-          rate = Math.floor(this.state.value);
-        } else {
-          rate = Math.round(this.state.value);
-        }
-
-        return stars;
     }
 
     getStyleElement(width) {
@@ -99,7 +85,6 @@ export default class Stars extends React.Component {
     }
 
     renderStyleElement(width) {
-        const { config, uniqueness } = this.state;
         return (
           <style dangerouslySetInnerHTML={{
             __html: this.getStyleElement(width)
@@ -109,9 +94,8 @@ export default class Stars extends React.Component {
     }
 
     renderStars() {
-        console.log(this.state.value);
         return times(this.props.count, i => {
-          const isActive = (this.state.value - (i + 1)) > 0 || this.state.value === this.props.count;
+          const isActive = (Math.floor(this.state.value) - (i + 1)) >= 0 || this.state.value === this.props.count;
           const isPartial = (this.state.value - i) > 0 && (this.state.value - i) < 1;
           const className = bem('stars__star', { 'active': isActive, [this.uniqueness]: isPartial });
 
