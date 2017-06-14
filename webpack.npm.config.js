@@ -58,8 +58,8 @@ module.exports = {
   output: {
     // The build folder.
     path: paths.appLibrary,
-    filename: 'react-responsive-comments.js',
-    library: 'ReactResponsiveComments',
+    filename: 'react-responsive-stars.js',
+    library: 'ReactResponsiveStars',
     libraryTarget: 'umd'
   },
   resolve: {
@@ -142,7 +142,7 @@ module.exports = {
   ],
 
   plugins: [
-    new ExtractTextPlugin("react-responsive-comments.css")
+    new ExtractTextPlugin("react-responsive-stars.css")
   ],
 
   target: 'node'

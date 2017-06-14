@@ -1,7 +1,7 @@
 {
-  "name": "react-progressive-stars",
+  "name": "react-responsive-stars",
   "version": "0.0.1",
-  "description": "react progressive stars",
+  "description": "react responsive stars",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build-prod.js",
