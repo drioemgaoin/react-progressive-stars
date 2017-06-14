@@ -1,6 +1,6 @@
 {
   "name": "react-responsive-stars",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "react responsive stars",
   "scripts": {
     "start": "node scripts/start.js",
@@ -20,6 +20,7 @@
     "reactjs",
     "react-component"
   ],
+  "main": "dist/react-responsive-stars.js",
   "bugs": {
     "url": "https://github.com/drioemgaoin/react-progressive-stars/issues"
   },
