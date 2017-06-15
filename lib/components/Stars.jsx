@@ -30,7 +30,7 @@ export default class Stars extends React.Component {
         }
     }
 
-    mouseOver(event) {
+    mouseMove(event) {
         event.preventDefault();
 
         const spread = event.target.getBoundingClientRect().right - event.target.getBoundingClientRect().left;
@@ -101,8 +101,7 @@ export default class Stars extends React.Component {
 
           return (
              <div key={i}
-                onMouseOver={this.props.edit && this.mouseOver.bind(this)}
-                onMouseMove={this.props.edit && this.mouseOver.bind(this)}
+                onMouseMove={this.props.edit && this.mouseMove.bind(this)}
                 onMouseLeave={this.props.edit && this.mouseLeave.bind(this)}
                 onClick={this.props.edit && this.click.bind(this)}
                 className={className}

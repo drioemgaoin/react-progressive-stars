@@ -28,4 +28,12 @@ describe('Stars', function() {
     expect(wrapper.find('.stars__star').at(3).children().at(0).type()).to.be.equal('style');
     expect(wrapper.find('.stars__star').at(4).hasClass('stars__star--')).to.be.equal(false);
   });
+
+  it('should disable click event if it is rendered as reeadonly component', function() {
+    var onChange = sinon.spy();
+    const wrapper = mount(<Stars value={3} edit={false} onChange={onChange} />);
+
+    wrapper.find('.stars__star').at(0).simulate('click', { preventDefault() {} });
+     expect(onChange.called).to.equal(false);
+  });
 });
