@@ -29,11 +29,19 @@ describe('Stars', function() {
     expect(wrapper.find('.stars__star').at(4).hasClass('stars__star--')).to.be.equal(false);
   });
 
-  it('should disable click event if it is rendered as reeadonly component', function() {
+  it('should disable click event if it is rendered as readonly component', function() {
     var onChange = sinon.spy();
     const wrapper = mount(<Stars value={3} edit={false} onChange={onChange} />);
 
     wrapper.find('.stars__star').at(0).simulate('click', { preventDefault() {} });
      expect(onChange.called).to.equal(false);
+  });
+
+  it('should enable click event if it is rendered as editable component', function() {
+    var onChange = sinon.spy();
+    const wrapper = mount(<Stars value={3} edit={true} onChange={onChange} />);
+
+    wrapper.find('.stars__star').at(0).simulate('click', { preventDefault() {} });
+     expect(onChange.called).to.equal(true);
   });
 });
