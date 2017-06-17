@@ -1,4 +1,5 @@
 import React from 'react';
+import classnames from 'classnames';
 import bem from 'bem-classname';
 import {times} from 'lodash';
 
@@ -114,7 +115,7 @@ export default class Stars extends React.Component {
     }
 
     render() {
-        const className = bem('stars', { 'edit': this.props.edit });
+        const className = bem(classnames('stars', this.props.className), { 'edit': this.props.edit });
         return (
           <div className={className} style={this.props.style}>
             {this.renderStars()}
