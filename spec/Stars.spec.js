@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactTestUtils from 'react-dom/test-utils';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
 import { Stars } from '../lib/index';
 
 
@@ -43,5 +42,37 @@ describe('Stars', function() {
 
     wrapper.find('.stars__star').at(0).simulate('click', { preventDefault() {} });
      expect(onChange.called).to.equal(true);
+  });
+
+  it('should disable mouse leave event if it is rendered as readonly component', function() {
+    var onChange = sinon.spy();
+    const wrapper = mount(<Stars value={3} edit={false} onChange={onChange} />);
+
+    ReactTestUtils.Simulate.mouseLeave(wrapper.find('.stars__star').at(0).node, { clientX: 100, preventDefault() {} });
+    expect(onChange.called).to.equal(false);
+  });
+
+  it('should enable mouse leave event if it is rendered as editable component', function() {
+    var onChange = sinon.spy();
+    const wrapper = mount(<Stars value={3} edit={true} onChange={onChange} />);
+
+    ReactTestUtils.Simulate.mouseLeave(wrapper.find('.stars__star').at(0).node, { clientX: 100, preventDefault() {} });
+    expect(onChange.called).to.equal(true);
+  });
+
+  it('should disable mouse move event if it is rendered as readonly component', function() {
+    var onChange = sinon.spy();
+    const wrapper = mount(<Stars value={3} edit={false} onChange={onChange} />);
+
+    ReactTestUtils.Simulate.mouseMove(wrapper.find('.stars__star').at(0).node, { clientX: 100, preventDefault() {} });
+    expect(onChange.called).to.equal(false);
+  });
+
+  it('should enable mouse move event if it is rendered as editable component', function() {
+    var onChange = sinon.spy();
+    const wrapper = mount(<Stars value={3} edit={true} onChange={onChange} />);
+
+    ReactTestUtils.Simulate.mouseMove(wrapper.find('.stars__star').at(0).node, { clientX: 100, preventDefault() {} });
+    expect(onChange.called).to.equal(true);
   });
 });
