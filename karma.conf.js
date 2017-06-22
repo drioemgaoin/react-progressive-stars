@@ -33,7 +33,7 @@ module.exports = function(config) {
           },
           {
             test: /(\.css)|(.scss)$/,
-            loader:'style!css!sass'
+            loader: 'style!css!sass'
           },
           {
             test: /\.png$/,

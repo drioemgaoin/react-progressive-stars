@@ -8,7 +8,6 @@ import './stars.scss';
 export default class Stars extends React.Component {
     static defaultProps = {
         count: 5,
-        progressive: false,
         edit: true,
         char: '★',
         value: 0
@@ -19,6 +18,12 @@ export default class Stars extends React.Component {
 
         this.state = { value: props.value };
         this.uniqueness = (Math.random() + '').replace('.', '');
+    }
+
+    componentWillReceiveProps(nextProps) {
+      if (this.state.value !== nextProps.value) {
+        this.setState({ value: nextProps.value });
+      }
     }
 
     mouseLeave(event) {
