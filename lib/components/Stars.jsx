@@ -6,11 +6,16 @@ import {times} from 'lodash';
 import './stars.scss';
 
 export default class Stars extends React.Component {
+    onClickBound = this.onClick.bind(this);
+    onMouseMoveBound = this.onMouseMove.bind(this);
+    onMouseLeaveBound = this.onLeaveMove.bind(this);
+
     static defaultProps = {
         count: 5,
         edit: true,
         char: '★',
-        value: 0
+        value: 0,
+        progressive: true
     };
 
     constructor(props) {
@@ -26,17 +31,17 @@ export default class Stars extends React.Component {
       }
     }
 
-    mouseLeave(event) {
+    onLeaveMove(event) {
         event.preventDefault();
 
         if (event.clientX <= event.target.getBoundingClientRect().left) {
             this.setValue(0);
-        } else if (event.clientX >= event.target.getBoundingClientRect().right) {
+        } else if (event.clientX >= this.refs['star-' + (this.props.count - 1)].getBoundingClientRect().right) {
             this.setValue(this.props.count);
         }
     }
 
-    mouseMove(event) {
+    onMouseMove(event) {
         event.preventDefault();
 
         const spread = event.target.getBoundingClientRect().right - event.target.getBoundingClientRect().left;
@@ -48,23 +53,25 @@ export default class Stars extends React.Component {
       }
     }
 
-    click(event) {
+    onClick(event) {
         event.preventDefault();
 
         const spread = event.target.getBoundingClientRect().right - event.target.getBoundingClientRect().left;
         const mouseAt = event.clientX - event.target.getBoundingClientRect().left;
 
         let index = Number(event.target.getAttribute('data-index'));
-        this.setValue(index + (mouseAt / spread));
+        if (this.props.progressive) {
+            this.setValue((index + (mouseAt / spread)).toFixed(2));
+        } else {
+            this.setValue(index + 1);
+        }
     }
 
     setValue(value) {
-        const roundValue = +value.toFixed(2);
-
-        this.setState({ value: roundValue });
+        this.setState({ value });
 
         if (this.props.onChange) {
-          this.props.onChange(roundValue);
+          this.props.onChange(value);
         }
     }
 
@@ -101,19 +108,22 @@ export default class Stars extends React.Component {
 
     renderStars() {
         return times(this.props.count, i => {
-          const isActive = (Math.floor(this.state.value) - (i + 1)) >= 0 || this.state.value === this.props.count;
-          const isPartial = (this.state.value - i) > 0 && (this.state.value - i) < 1;
+          const value = i;
+
+          const isActive = this.props.progressive ? ((Math.floor(this.state.value) - value) > 0 || this.state.value === this.props.count) : value < this.state.value;
+          const isPartial = this.props.progressive ? (this.state.value - value) > 0 && (this.state.value - value) < 1 : false;
           const className = bem('stars__star', { 'active': isActive, [this.uniqueness]: isPartial });
 
           return (
              <div key={i}
-                onMouseMove={this.props.edit && this.mouseMove.bind(this)}
-                onMouseLeave={this.props.edit && this.mouseLeave.bind(this)}
-                onClick={this.props.edit && this.click.bind(this)}
+                ref={'star-' + i}
+                onMouseMove={this.props.progressive ? this.props.edit && this.onMouseMoveBound : undefined}
+                onMouseLeave={this.props.progressive ? this.props.edit && this.onMouseLeaveBound : undefined}
+                onClick={this.props.edit && this.onClickBound}
                 className={className}
-                data-index={i}
+                data-index={value}
                 data-forhalf={this.props.char}>
-                {isPartial ? this.renderStyleElement(((this.state.value - i) * 100) + '%') : undefined}
+                {isPartial ? this.renderStyleElement(((this.state.value - value) * 100) + '%') : undefined}
              </div>
          );
       });
